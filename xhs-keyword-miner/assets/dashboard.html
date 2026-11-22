@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小红书关键词热度看板</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  background:#f5f5f7;color:#1a1a1a;line-height:1.6;padding:32px 20px 64px}
+.wrap{max-width:1180px;margin:0 auto}
+h1{font-size:26px;font-weight:700;letter-spacing:-.3px}
+h1 em{color:#ff2442;font-style:normal}
+.sub{color:#8a8a92;font-size:13px;margin-top:6px}
+.stats{display:flex;gap:12px;margin:20px 0 22px;flex-wrap:wrap}
+.stat{background:#fff;border-radius:14px;padding:14px 20px;flex:1;min-width:140px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.stat .n{font-size:24px;font-weight:700;color:#ff2442;letter-spacing:-.5px}
+.stat .l{font-size:12px;color:#8a8a92;margin-top:2px}
+.panel{background:#fff;border-radius:16px;padding:20px 24px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.panel h2{font-size:15px;font-weight:700;margin-bottom:4px}
+.panel .hint{font-size:12px;color:#9a9aa2;margin-bottom:16px}
+.bar-row{display:flex;align-items:center;gap:10px;padding:4px 0;font-size:13px}
+.bar-name{width:230px;flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#333}
+.bar-track{flex:1;height:8px;background:#f2f2f5;border-radius:5px;overflow:hidden}
+.bar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,#ff8fa3,#ff2442)}
+.bar-val{width:52px;flex:none;text-align:right;font-size:12px;color:#8a8a92;font-variant-numeric:tabular-nums}
+.bar-seed{width:80px;flex:none;font-size:11px;color:#bbb}
+.toolbar{display:flex;gap:10px;margin:22px 0 16px;flex-wrap:wrap;align-items:center}
+input#q{flex:1;min-width:220px;padding:11px 16px;border:1px solid #e5e5ea;border-radius:10px;
+  font-size:14px;outline:none;background:#fff}
+input#q:focus{border-color:#ff2442;box-shadow:0 0 0 3px rgba(255,36,66,.08)}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filters button{padding:9px 14px;border:1px solid #e5e5ea;background:#fff;border-radius:9px;
+  font-size:12.5px;cursor:pointer;color:#555}
+.filters button:hover{border-color:#ffb3bf}
+.filters button.on{background:#ff2442;border-color:#ff2442;color:#fff;font-weight:500}
+.card{background:#fff;border-radius:16px;padding:20px 24px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.card-h{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.seed{font-size:19px;font-weight:700}
+.badge{font-size:11px;padding:3px 9px;border-radius:20px;background:#fff0f2;color:#ff2442;font-weight:600}
+.badge.gray{background:#f2f2f5;color:#777}
+.block{margin-top:14px}
+.block-t{font-size:12px;font-weight:600;color:#8a8a92;letter-spacing:.4px;margin-bottom:9px;
+  display:flex;align-items:center;gap:8px}
+.block-t::after{content:"";flex:1;height:1px;background:#f0f0f2}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:5px 10px;border-radius:8px;
+  background:#f6f6f8;color:#333;border:1px solid transparent;transition:.15s;cursor:default}
+.chip:hover{background:#fff;border-color:#ffd0d8}
+.chip .sc{font-size:10.5px;font-weight:700;padding:1px 5px;border-radius:4px;font-variant-numeric:tabular-nums}
+.g-S{background:#fff0f2;border-color:#ffc9d2;color:#c4122f;font-weight:600}
+.g-S .sc{background:#ff2442;color:#fff}
+.g-A{background:#fff8f0;border-color:#ffe0bd;color:#b35c00}
+.g-A .sc{background:#ff9425;color:#fff}
+.g-B{background:#fdfbf0;border-color:#f0e6b8;color:#8a7300}
+.g-B .sc{background:#d6b400;color:#fff}
+.g-C .sc{background:#e3e3e8;color:#666}
+.g-D{color:#aaa}.g-D .sc{background:#f0f0f2;color:#bbb}
+.more{margin-top:10px;font-size:12.5px;color:#ff2442;cursor:pointer;font-weight:500}
+.more:hover{text-decoration:underline}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#8a8a92;margin-top:8px}
+.legend b{font-weight:600;color:#555}
+footer{text-align:center;color:#b0b0b8;font-size:12px;margin-top:28px;line-height:1.9}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>小红书搜索下拉词 <em>热度看板</em></h1>
+    <div class="sub">__NSEED__ 个种子词 · __TOTAL__ 个联想词 · 按搜索联想排序计算的相对热度</div>
+  </header>
+  <div class="stats">
+    <div class="stat"><div class="n">__TOTAL__</div><div class="l">不重复词总数</div></div>
+    <div class="stat"><div class="n">__SCORED__</div><div class="l">已计算热度</div></div>
+    <div class="stat"><div class="n">__SCNT__</div><div class="l">S 档优先词</div></div>
+    <div class="stat"><div class="n" style="font-size:15px;padding-top:4px">综合推荐分</div><div class="l">热度 × 相关度</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>综合推荐 Top 50</h2>
+    <div class="hint">综合推荐分 = 联想热度 × 相关度，已压掉谐音/泛前缀噪音</div>
+    <div id="topbars"></div>
+  </div>
+
+  <div class="toolbar">
+    <input id="q" placeholder="过滤关键词…">
+    <div class="filters">
+      <button data-f="all" class="on">全部</button>
+      <button data-f="core">核心下拉</button>
+      <button data-f="pre">前缀扩散</button>
+      <button data-f="l2">二级扩展</button>
+      <button data-f="S">仅看 S/A 档</button>
+    </div>
+    <div class="filters"><button id="sortBtn" data-s="group">当前：按分组</button></div>
+  </div>
+  <div id="list"></div>
+
+  <div class="legend">
+    <span><b>梯队：</b></span><span>■ S 优先</span><span>■ A 较高</span><span>■ B 中等</span>
+    <span>■ C 偏低</span><span>■ D 长尾</span>
+  </div>
+
+  <footer>
+    热度算法：联想排名分 × 命中次数置信度；综合推荐分再乘相关度以过滤谐音噪音<br>
+    数据来源：小红书搜索联想接口实时抓取 · 这是<b>相对排序指标</b>，不是官方搜索量
+  </footer>
+</div>
+<script>
+const DATA = __DATA__;
+const TOP = __TOP__;
+let filter = "all", kw = "", sort = "group";
+
+document.getElementById("topbars").innerHTML = TOP.map(t =>
+  `<div class="bar-row">
+     <div class="bar-name" title="${t.w}">${t.g==="S"?"★ ":""}${t.w}</div>
+     <div class="bar-track"><div class="bar-fill" style="width:${(t.h||0).toFixed(1)}%"></div></div>
+     <div class="bar-val">${(t.h||0).toFixed(0)}</div>
+     <div class="bar-seed">${t.s}</div>
+   </div>`).join("");
+
+function chipEl(o, t){
+  const cls = o.g ? "g-"+o.g : (t==="core"?"g-C":"");
+  const v = (o.sc!=null?o.sc:o.h);
+  const sc = v!=null ? `<span class="sc">${v.toFixed(0)}</span>` : "";
+  return `<span class="chip ${cls}">${o.w}${sc}</span>`;
+}
+
+function render(){
+  const box = document.getElementById("list");
+  box.innerHTML = "";
+  DATA.forEach(d => {
+    let inner = "", count = 0;
+    ["core","pre","l2"].forEach(t => {
+      let items = d[t].filter(o => !kw || o.w.toLowerCase().includes(kw));
+      if (filter === "S") items = items.filter(o => o.g==="S"||o.g==="A");
+      else if (filter !== "all" && filter !== t) items = [];
+      if (!items.length) return;
+      if (sort==="heat") items = items.slice().sort((a,b)=>((b.sc??b.h)||0)-((a.sc??a.h)||0));
+      const shown = (t==="l2" && sort==="group" && !kw) ? items.slice(0,20) : items;
+      const rest = items.length - shown.length;
+      count += items.length;
+      inner += `<div class="block"><div class="block-t">${{core:"核心下拉词",pre:"前缀扩散词",l2:"二级扩展词"}[t]} · ${items.length}</div>
+        <div class="chips">${shown.map(o=>chipEl(o,t)).join("")}</div>
+        ${rest>0?`<span class="more" data-i="${d.seed}" data-t="${t}">展开全部 ${items.length} 个 ↓</span>`:""}
+      </div>`;
+    });
+    if (!count) return;
+    const sa = d.core.concat(d.pre,d.l2).filter(o=>o.g==="S"||o.g==="A").length;
+    box.insertAdjacentHTML("beforeend",
+      `<div class="card"><div class="card-h"><span class="seed">${d.seed}</span>
+       <span class="badge">${count} 词</span>
+       <span class="badge gray">S/A ${sa}</span></div>${inner}</div>`);
+  });
+  box.querySelectorAll(".more").forEach(el=>{
+    el.onclick = () => {
+      const d = DATA.find(x=>x.seed===el.dataset.i), t = el.dataset.t;
+      let items = d[t].filter(o=>!kw||o.w.toLowerCase().includes(kw));
+      el.previousElementSibling.innerHTML = items.map(o=>chipEl(o,t)).join("");
+      el.remove();
+    };
+  });
+  if (!box.innerHTML) box.innerHTML = '<div class="card" style="color:#bbb;font-size:13px">没有匹配的词</div>';
+}
+document.getElementById("q").oninput = e => { kw = e.target.value.trim().toLowerCase(); render(); };
+document.querySelectorAll(".filters button[data-f]").forEach(b=>{
+  b.onclick = () => {
+    document.querySelectorAll(".filters button[data-f]").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on"); filter = b.dataset.f; render();
+  };
+});
+const sb = document.getElementById("sortBtn");
+sb.onclick = () => {
+  sort = sort==="group" ? "heat" : "group";
+  sb.textContent = "当前：" + (sort==="group"?"按分组":"按热度");
+  render();
+};
+render();
+</script>
+</body>
+</html>

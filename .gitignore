@@ -1,0 +1,16 @@
+# 系统与临时文件
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+*.log
+node_modules/
+
+# 采集运行时数据（包含个人浏览器profile）
+xhs_profile/
+profile*/
+*_profile/
+
+# 本地运行工作目录
+xhs_keywords/
+workdir/
