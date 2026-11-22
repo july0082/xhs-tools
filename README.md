@@ -29,7 +29,14 @@
 
 把两个文件夹打 zip 后，在 WorkBuddy 客户端「技能库 → 上传技能」导入即可，之后对话里直接说"帮我挖小红书关键词"就能调用。两个技能也已上架 [SkillHub 技能市场](https://www.skillhub.cn)，搜索作者「疯狂的姜柠檬」可直接安装。
 
-### 方式二：独立脚本运行
+### 方式二：其他 AI Agent（Codex / Claude Code / Cursor 均可）
+
+工具本体是「Python/Node 脚本 + Markdown 说明」，不绑定 WorkBuddy。任何有代码执行能力的 Agent 都能用：
+
+- **Claude Code / WorkBuddy**：自动识别 `SKILL.md`，直接说"帮我挖小红书关键词"即可
+- **Codex / Cursor**：仓库根目录已提供 [`AGENTS.md`](AGENTS.md)，打开会话后说"读 AGENTS.md，按说明采集××关键词"即可，Agent 会自行读文档、装依赖、跑脚本
+
+### 方式三：独立脚本运行
 
 **关键词采集**（依赖 Python 3.10+、Playwright、系统 Chrome）：
 
